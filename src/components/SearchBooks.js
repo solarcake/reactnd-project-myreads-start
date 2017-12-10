@@ -2,12 +2,17 @@ import React , { Component } from 'react'
 import { Link } from 'react-router-dom'
 import BooksGrid from './BooksGrid'
 import * as BooksAPI from '../BooksAPI'
+import PropTypes from 'prop-types'
 
 class SearchBooks extends Component {
     state = {
      searchedBooks: [],
      query: null
     }
+
+    static propTypes  = {
+      books: PropTypes.array.isRequired
+    };
 
     /**
     * @description Searches for a book with a given search phrase
@@ -16,7 +21,14 @@ class SearchBooks extends Component {
     searchBooks(searchPhrase) {
       BooksAPI.search(searchPhrase)
         .then((searchResult) => {
-            const items = searchResult && !searchResult.error ? searchResult : [];
+            let items = searchResult && !searchResult.error ? searchResult : [];
+
+            // lets take the updated list from the books
+            items = items.map((book) => {
+               book.shelf = 'none';
+               return this.props.books.filter((b) => b.id === book.id)[0] || book;
+            });
+
             this.setState({searchedBooks: items, query: searchPhrase});
         });
     }
