@@ -16,9 +16,16 @@ class BooksApp extends React.Component {
       });
   }
 
+  /**
+    * @description Changes the state of a book which is held in the state object
+    * @param {string} update - The shelf update
+    * @param {string} book - The book to refresh the state with
+    */
   changeBookState(update, book) {
-      book.shelf = update;
+      // update books up
       BooksAPI.update(book, update);
+
+      //update state based on new book or existing book
       this.setState((state) => {
           let books = state.books.slice();
           let updateBook = books.find((u) => {
@@ -26,14 +33,15 @@ class BooksApp extends React.Component {
           });
 
           if(!updateBook) {
+            book.shelf = update;
             books.push(book);
           } else {
             updateBook.shelf = update;
           }
       
-        return {
-          books: books
-        };
+          return {
+            books: books
+          };
       });
   }
 

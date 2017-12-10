@@ -5,14 +5,19 @@ import * as BooksAPI from '../BooksAPI'
 
 class SearchBooks extends Component {
     state = {
-     searchedBooks: []
+     searchedBooks: [],
+     query: null
     }
 
+    /**
+    * @description Searches for a book with a given search phrase
+    * @param {string} searchPhrase - The search phrase
+    */
     searchBooks(searchPhrase) {
       BooksAPI.search(searchPhrase)
         .then((searchResult) => {
             const items = searchResult && !searchResult.error ? searchResult : [];
-            this.setState({searchedBooks: items});
+            this.setState({searchedBooks: items, query: searchPhrase});
         });
     }
 
@@ -31,11 +36,17 @@ class SearchBooks extends Component {
                   However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
                   you don't find a specific author or title. Every search is limited by search terms.
                 */}
-                <input type="text" placeholder="Search by title or author" onChange={(event)=> this.searchBooks(event.target.value)}/>
+                <input id="search-text" type="text" placeholder="Search by title or author" onChange={(event)=> this.searchBooks(event.target.value)}/>
               </div>
             </div>
             <div className="search-books-results">
-                <BooksGrid books={this.state.searchedBooks} onBookStateChange={onBookStateChange}/>
+                {this.state.searchedBooks.length > 0 && (
+                  <BooksGrid books={this.state.searchedBooks} onBookStateChange={onBookStateChange}/>
+                )}
+
+                {this.state.query && this.state.searchedBooks.length === 0 && (
+                  <div>No books have been found</div>
+                )}
             </div>
           </div>  
         )
